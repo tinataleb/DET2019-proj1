@@ -17,13 +17,16 @@ import sys
 import re           #regular expression lib for string searches!
 
 #set up your GCP credentials - replace the " " in the following line with your .json file and path
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="../cred.json"
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="../../cred.json"
 
 # this line connects to Google Cloud Vision! 
 client = vision.ImageAnnotatorClient()
 
 # global variable for our image file - to be captured soon!
 image = 'image.jpg'
+
+our_ings = ["banana", "straw", "milk"]
+scanned_ings = []
 
 
 def stream(camera):
@@ -43,6 +46,8 @@ def stream(camera):
         rawCapture.truncate(0)
         
         output_capture(camera)
+        
+        
 
         # if the `q` key was pressed, break from the loop
         if key == ord("q"):
@@ -65,8 +70,15 @@ def web_search(image):
     response = client.web_detection(image=image)
     web_guess = response.web_detection
     
-    for label in web_guess.best_guess_labels:
-        print('Best Web Guess Label: {}'.format(label.label))
+#    print(web_guess)
+#    print("LABELS:")
+#    print(web_guess.best_guess_labels)
+    
+#    for label in web_guess.best_guess_labels:
+#        print('Best Web Guess Label: {}'.format(label.label))
+    return [label for label in web_guess.best_guess_labels]
+    
+        
 
 def output_capture(camera):
     takephoto(camera) # First take a picture
@@ -78,8 +90,33 @@ def output_capture(camera):
         #convert the image file to a GCP Vision-friendly type
         image = vision.types.Image(content=content)
 
-        web_search(image)
+        labels = web_search(image)
+        print("labels")
+        ing_checker(labels)
+        
 #        time.sleep(0.1)
+
+def ing_checker(labels):
+    for l in labels:
+        if l in our_ings:
+            scanned_ings.append(l)
+            #output with speaker
+            speaker_output(l)
+            
+def speaker_output(word):
+    pg.init()
+    pg.mixer.init()
+    
+    pg.mixer.music.load("/home/pi/DET2019_Class5/hello2.wav")
+    pg.mixer.music.play()
+
+
+def testTouch():
+    time.sleep(0.1)
+    if crickit.touch_1.value:
+        print("touch is working")
+    else:
+        print("nope")
     
 def main():
     
@@ -99,6 +136,7 @@ def main():
     #setup our pygame mixer to play audio in subsequent stages
     
     stream(camera)
+        
           
         
 if __name__ == '__main__':
