@@ -19,7 +19,7 @@ import re           #regular expression lib for string searches!
 #set up your GCP credentials - replace the " " in the following line with your .json file and path
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="../../cred.json"
 
-# this line connects to Google Cloud Vision! 
+# this line connects to Google Cloud Vision!
 client = vision.ImageAnnotatorClient()
 
 # global variable for our image file - to be captured soon!
@@ -30,7 +30,7 @@ scanned_ings = []
 
 
 def stream(camera):
-    
+
     rawCapture = PiRGBArray(camera, size=(640, 480))
     # capture frames from the camera
     for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
@@ -44,41 +44,41 @@ def stream(camera):
 
         # clear the stream in preparation for the next frame
         rawCapture.truncate(0)
-        
+
         output_capture(camera)
-        
-        
+
+
 
         # if the `q` key was pressed, break from the loop
         if key == ord("q"):
             break
 def takephoto(camera):
-    
+
     # this triggers an on-screen preview, so you know what you're photographing!
-    camera.start_preview() 
+    camera.start_preview()
 #    sleep(.5)                   #give it a pause so you can adjust if needed
     camera.capture('image.jpg') #save the image
     camera.stop_preview()       #stop the preview
-    
+
 def web_search(image):
     #this function sends your image to google cloud using the
     #web_detection method, collects a response, and parses that
     #response for the 'best web association' found for the image.
     #there's no actuation here - just printing - but you can easily
     #engage with speaker_out() or motor_turn() if you like!
-    
+
     response = client.web_detection(image=image)
     web_guess = response.web_detection
-    
+
 #    print(web_guess)
 #    print("LABELS:")
 #    print(web_guess.best_guess_labels)
-    
+
 #    for label in web_guess.best_guess_labels:
 #        print('Best Web Guess Label: {}'.format(label.label))
     return [label for label in web_guess.best_guess_labels]
-    
-        
+
+
 
 def output_capture(camera):
     takephoto(camera) # First take a picture
@@ -93,33 +93,51 @@ def output_capture(camera):
         labels = web_search(image)
         print("labels")
         ing_checker(labels)
-        
+
 #        time.sleep(0.1)
 
-def ing_checker(labels):
-    for l in labels:
-        if l in our_ings:
-            scanned_ings.append(l)
-            #output with speaker
-            speaker_output(l)
-            
-def speaker_output(word):
+
+def speak(ing):
     pg.init()
     pg.mixer.init()
-    
-    pg.mixer.music.load("/home/pi/DET2019_Class5/hello2.wav")
+
+    if ing=="strawberry":
+        pg.mixer.music.load("/home/pi/DET2019_Proj1/audio/strawberry.wav")
+        pg.mixer.music.play()
+    if ing=="banana":
+        pg.mixer.music.load("/home/pi/DET2019_Proj1/audio/banana.wav")
+        pg.mixer.music.play()
+    if ing=="milk":
+        pg.mixer.music.load("/home/pi/DET2019_Proj1/audio/milk.wav")
+        pg.mixer.music.play()
+
+def walkthrough():
+    pg.init()
+    pg.mixer.init()
+
+    pg.mixer.music.load("/home/pi/DET2019_Proj1/audio/instructions-1.wav")
     pg.mixer.music.play()
+    time.sleep(5)
+
+    pg.mixer.music.load("/home/pi/DET2019_Proj1/audio/instructions-2.wav")
+    pg.mixer.music.play()
+    time.sleep(5)
+
 
 
 def testTouch():
     time.sleep(0.1)
     if crickit.touch_1.value:
-        print("touch is working")
+        print("DEVICE TURNS ON")
+        return True
+
     else:
-        print("nope")
-    
+        print("OFFLINE.")
+        return False
+
+
 def main():
-    
+
     #generate a camera object for the takephoto function to
     #work with
 #    camera = picamera.PiCamera()
@@ -128,16 +146,20 @@ def main():
     camera = PiCamera()
     camera.resolution = (640, 480)
     camera.framerate = 32
-    
+
 
     # allow the camera to warmup
     time.sleep(0.1)
-    
+
     #setup our pygame mixer to play audio in subsequent stages
-    
-    stream(camera)
-        
-          
-        
+
+    # Tests for touch being on. ONLY if it is activated, the stream begins.
+    while True:
+        if testTouch():
+            stream(camera)
+        else:
+            print("offline")
+
+
 if __name__ == '__main__':
-        main() 
+        main()
