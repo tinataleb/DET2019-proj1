@@ -32,7 +32,7 @@ client = vision.ImageAnnotatorClient()
 # global variable for our image file - to be captured soon!
 image = 'image.jpg'
 
-our_ings = ["banana", "straw", "milk"]
+our_ings = ["banana", "strawberries", "milk", "strawberry"]
 scanned_ings = []
 
 
@@ -51,8 +51,10 @@ def stream(camera):
 
         # clear the stream in preparation for the next frame
         rawCapture.truncate(0)
-
         output_capture(camera)
+
+        if len(scanned_ings) == 3:
+            walkthrough()
 
 
 
@@ -68,21 +70,9 @@ def takephoto(camera):
     camera.stop_preview()       #stop the preview
 
 def web_search(image):
-    #this function sends your image to google cloud using the
-    #web_detection method, collects a response, and parses that
-    #response for the 'best web association' found for the image.
-    #there's no actuation here - just printing - but you can easily
-    #engage with speaker_out() or motor_turn() if you like!
-
     response = client.web_detection(image=image)
     web_guess = response.web_detection
 
-#    print(web_guess)
-#    print("LABELS:")
-#    print(web_guess.best_guess_labels)
-
-#    for label in web_guess.best_guess_labels:
-#        print('Best Web Guess Label: {}'.format(label.label))
     return [label for label in web_guess.best_guess_labels]
 
 
@@ -92,16 +82,17 @@ def output_capture(camera):
     """Run a label request on a single image"""
 
     with open('image.jpg', 'rb') as image_file:
-        #read the image file
         content = image_file.read()
-        #convert the image file to a GCP Vision-friendly type
         image = vision.types.Image(content=content)
 
         labels = web_search(image)
         print("labels")
         ing_checker(labels)
 
-#        time.sleep(0.1)
+def ing_checker(ing):
+    if ing in our_ings:
+        scanned_ings.append(ing)
+        speak(ing)
 
 
 ########## START LED SECTION ###########
@@ -200,12 +191,11 @@ def testTouch():
 def sound_on():
     print("playing sound")
     pg.init()
-    pg.mixer.init()
-    pg.mixer.music.load("/home/pi/DET2019_Proj1/audio/on-sound.wav")
+    sound_file = "/home/pi/Desktop/audio/on-sound.wav"
+    pg.mixer.music.load(sound_file)
     pg.mixer.music.play()
     time.sleep(5)
-
-
+    
 def leds_on():
     for i in range(10):
         print("BLUE LED")
@@ -226,21 +216,12 @@ def leds_discovery():
 
 def main():
 
-    #generate a camera object for the takephoto function to
-    #work with
-#    camera = picamera.PiCamera()
-
-    # initialize the camera and grab a reference to the raw camera capture
     camera = PiCamera()
     camera.resolution = (640, 480)
     camera.framerate = 32
-
     # allow the camera to warmup
     time.sleep(0.1)
 
-    #setup our pygame mixer to play audio in subsequent stages
-
-    # Tests for touch being on. ONLY if it is activated, the stream begins.
     while True:
         if testTouch():
             sound_on()
