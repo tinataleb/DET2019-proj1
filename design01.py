@@ -131,6 +131,7 @@ GREEN = (0, 255, 0)
 CYAN = (0, 255, 255)
 BLUE = (0, 0, 255)
 PURPLE = (180, 0, 255)
+OFF = (0,0,0)
 
 
 ########## END LED SECTION ###########
@@ -195,15 +196,16 @@ def sound_on():
     pg.mixer.music.load(sound_file)
     pg.mixer.music.play()
     time.sleep(5)
-    
+    pixels.fill(OFF)
+    pixels.show()
+
+
 def leds_on():
-    for i in range(10):
-        print("BLUE LED")
-        time.sleep(1)
-        pixels.fill(BLUE)
-        pixels.show()
-        time.sleep(1)
-        color_chase(BLUE, 0.1)
+    print("PURPLE LED")
+    pixels.fill(PURPLE)
+    pixels.show()
+    color_chase(PURPLE, 0.1)
+
 
 def leds_discovery():
     for i in range(4):
@@ -228,7 +230,7 @@ def main():
             leds_on()
             stream(camera)
         else:
-            print("offline")
+            print("searching...")
 
 
 if __name__ == '__main__':
