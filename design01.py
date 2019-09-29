@@ -24,7 +24,7 @@ num_pixels = 8
 pixels = NeoPixel(crickit.seesaw, 20, num_pixels)
 
 #set up your GCP credentials - replace the " " in the following line with your .json file and path
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="../../cred.json"
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="/home/pi/Desktop/DET-2019-Pancham.json"
 
 # this line connects to Google Cloud Vision!
 client = vision.ImageAnnotatorClient()
