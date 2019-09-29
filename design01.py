@@ -16,6 +16,13 @@ import signal
 import sys
 import re           #regular expression lib for string searches!
 
+from adafruit_seesaw.neopixel import NeoPixel
+
+# The number of NeoPixels
+num_pixels = 8
+
+pixels = NeoPixel(crickit.seesaw, 20, num_pixels)
+
 #set up your GCP credentials - replace the " " in the following line with your .json file and path
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="../../cred.json"
 
@@ -97,6 +104,46 @@ def output_capture(camera):
 #        time.sleep(0.1)
 
 
+########## START LED SECTION ###########
+
+def wheel(pos):
+    # Input a value 0 to 255 to get a color value.
+    # The colours are a transition r - g - b - back to r.
+    if pos < 0 or pos > 255:
+        return (0, 0, 0)
+    if pos < 85:
+        return (255 - pos * 3, pos * 3, 0)
+    if pos < 170:
+        pos -= 85
+        return (0, 255 - pos * 3, pos * 3)
+    pos -= 170
+    return (pos * 3, 0, 255 - pos * 3)
+
+def color_chase(color, wait):
+    for i in range(num_pixels):
+        pixels[i] = color
+        time.sleep(wait)
+        pixels.show()
+    time.sleep(0.5)
+
+def rainbow_cycle(wait):
+    for j in range(255):
+        for i in range(num_pixels):
+            rc_index = (i * 256 // num_pixels) + j
+            pixels[i] = wheel(rc_index & 255)
+        pixels.show()
+        time.sleep(wait)
+
+RED = (255, 0, 0)
+YELLOW = (255, 150, 0)
+GREEN = (0, 255, 0)
+CYAN = (0, 255, 255)
+BLUE = (0, 0, 255)
+PURPLE = (180, 0, 255)
+
+
+########## END LED SECTION ###########
+
 def speak(ing):
     pg.init()
     pg.mixer.init()
@@ -130,10 +177,35 @@ def testTouch():
     if crickit.touch_1.value:
         print("DEVICE TURNS ON")
         return True
-
     else:
         print("OFFLINE.")
         return False
+
+def sound_on():
+    print("playing sound")
+    pg.init()
+    pg.mixer.init()
+    pg.mixer.music.load("/home/pi/DET2019_Proj1/audio/on-sound.wav")
+    pg.mixer.music.play()
+    time.sleep(5)
+
+
+def leds_on():
+    for i in range(10):
+        print("BLUE LED")
+        time.sleep(1)
+        pixels.fill(BLUE)
+        pixels.show()
+        time.sleep(1)
+        color_chase(BLUE, 0.1)
+
+def leds_discovery():
+    for i in range(4):
+        print("GREEN LED")
+        time.sleep(1)
+        pixels.fill(GREEN)
+        pixels.show()
+        color_chase(GREEN, 0.1)
 
 
 def main():
@@ -147,7 +219,6 @@ def main():
     camera.resolution = (640, 480)
     camera.framerate = 32
 
-
     # allow the camera to warmup
     time.sleep(0.1)
 
@@ -156,6 +227,8 @@ def main():
     # Tests for touch being on. ONLY if it is activated, the stream begins.
     while True:
         if testTouch():
+            sound_on()
+            leds_on()
             stream(camera)
         else:
             print("offline")
