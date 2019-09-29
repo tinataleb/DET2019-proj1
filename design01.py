@@ -144,12 +144,14 @@ PURPLE = (180, 0, 255)
 
 ########## END LED SECTION ###########
 
+########## START SPEAKING SECTION ###########
+
 def speak(ing):
     pg.init()
     pg.mixer.init()
 
     if ing=="strawberry":
-        pg.mixer.music.load("/home/pi/DET2019_Proj1/audio/strawberry.wav")
+        pg.mixer.music.load("/home/pi/DET2019_Proj1/audio/strawberries.wav")
         pg.mixer.music.play()
     if ing=="banana":
         pg.mixer.music.load("/home/pi/DET2019_Proj1/audio/banana.wav")
@@ -170,6 +172,20 @@ def walkthrough():
     pg.mixer.music.play()
     time.sleep(5)
 
+    pg.mixer.music.load("/home/pi/DET2019_Proj1/audio/instructions-3.wav")
+    pg.mixer.music.play()
+    time.sleep(5)
+
+    pg.mixer.music.load("/home/pi/DET2019_Proj1/audio/instructions-4.wav")
+    pg.mixer.music.play()
+    time.sleep(5)
+
+    pg.mixer.music.load("/home/pi/DET2019_Proj1/audio/instructions-5.wav")
+    pg.mixer.music.play()
+    time.sleep(5)
+
+
+########## END SPEAKING SECTION ###########
 
 
 def testTouch():
