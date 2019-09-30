@@ -142,17 +142,27 @@ OFF = (0,0,0)
 
 ########## END LED SECTION ###########
 
+<<<<<<< HEAD
 def timer_on(t):
+=======
+def timer_on(time):
+>>>>>>> 9465950034e75005d21cb3d554b24549bab6155c
     #5 degree tick marks
     #31 marks
     # 16 is center
     #total is 120 degrees
     crickit.servo_1.angle = 0
     time.sleep(1)
+<<<<<<< HEAD
     for i in range(0,120, 120//t):
         crickit.servo_1.angle = i
         time.sleep(1)
     crickit.servo_1.angle = 60
+=======
+    for i in range(0,120, 120/time):
+        crickit.servo_1.angle = i
+        time.sleep(.1)
+>>>>>>> 9465950034e75005d21cb3d554b24549bab6155c
 
 
 ########## START SPEAKING SECTION ###########
@@ -167,7 +177,11 @@ def speak(ing):
     if ing=="banana":
         pg.mixer.music.load("/home/pi/Desktop/audio/banana.wav")
         pg.mixer.music.play()
+<<<<<<< HEAD
     if ing=="milk" or ing=="carton" or ing=="lactis" or ing=="liquid":
+=======
+    if ing=="milk":
+>>>>>>> 9465950034e75005d21cb3d554b24549bab6155c
         pg.mixer.music.load("/home/pi/Desktop/audio/milk.wav")
         pg.mixer.music.play()
     leds_discovery()
@@ -177,22 +191,39 @@ def walkthrough():
     pg.init()
     pg.mixer.init()
 
+<<<<<<< HEAD
     pg.mixer.music.load("/home/pi/Desktop/audio/i-found.wav")
     pg.mixer.music.play()
     time.sleep(5)
 
     pg.mixer.music.load("/home/pi/Desktop/audio/instructions-1.wav")
+=======
+    pg.mixer.music.load("/home/pi/Desktop/audio/instructions-1.wav")
     pg.mixer.music.play()
-    time.sleep(15)
+    time.sleep(5)
 
     pg.mixer.music.load("/home/pi/Desktop/audio/instructions-2.wav")
+>>>>>>> 9465950034e75005d21cb3d554b24549bab6155c
     pg.mixer.music.play()
     time.sleep(15)
 
+<<<<<<< HEAD
+    pg.mixer.music.load("/home/pi/Desktop/audio/instructions-2.wav")
+=======
     pg.mixer.music.load("/home/pi/Desktop/audio/instructions-3.wav")
+>>>>>>> 9465950034e75005d21cb3d554b24549bab6155c
+    pg.mixer.music.play()
+    time.sleep(15)
+
+<<<<<<< HEAD
+    pg.mixer.music.load("/home/pi/Desktop/audio/instructions-3.wav")
+=======
+    pg.mixer.music.load("/home/pi/Desktop/audio/instructions-4.wav")
+>>>>>>> 9465950034e75005d21cb3d554b24549bab6155c
     pg.mixer.music.play()
     time.sleep(10)
 
+<<<<<<< HEAD
     pg.mixer.music.load("/home/pi/Desktop/audio/instructions-4.wav")
     pg.mixer.music.play()
     time.sleep(10)
@@ -204,6 +235,12 @@ def walkthrough():
 
     pg.mixer.music.load("/home/pi/Desktop/audio/recipe-complete.wav")
     pg.mixer.music.play()
+=======
+    pg.mixer.music.load("/home/pi/Desktop/audio/instructions-5.wav")
+    pg.mixer.music.play()
+    timer_on(60)
+    time.sleep(5)
+>>>>>>> 9465950034e75005d21cb3d554b24549bab6155c
 
 
 ########## END SPEAKING SECTION ###########
