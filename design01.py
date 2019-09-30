@@ -32,7 +32,7 @@ client = vision.ImageAnnotatorClient()
 # global variable for our image file - to be captured soon!
 image = 'image.jpg'
 
-our_ings = ["banana", "strawberries", "milk", "strawberry"]
+our_ings = ["banana", "strawberries", "milk", "strawberry", "carton", "lactis", "liquid"]
 scanned_ings = []
 
 
@@ -84,15 +84,21 @@ def output_capture(camera):
     with open('image.jpg', 'rb') as image_file:
         content = image_file.read()
         image = vision.types.Image(content=content)
-
         labels = web_search(image)
-        print("labels")
-        ing_checker(labels)
+        for label in labels:
+            l = label.label
+            print(l)
+            ing_checker(l)
 
 def ing_checker(ing):
-    if ing in our_ings:
-        scanned_ings.append(ing)
-        speak(ing)
+    print('checking {}'.format(ing))
+    ing_strings = ing.split(" ")
+    for i in ing_strings:
+        if i in our_ings:
+            scanned_ings.append(i)
+            print('scanned {}'.format(i))
+
+            speak(i)
 
 
 ########## START LED SECTION ###########
@@ -136,45 +142,68 @@ OFF = (0,0,0)
 
 ########## END LED SECTION ###########
 
+def timer_on(t):
+    #5 degree tick marks
+    #31 marks
+    # 16 is center
+    #total is 120 degrees
+    crickit.servo_1.angle = 0
+    time.sleep(1)
+    for i in range(0,120, 120//t):
+        crickit.servo_1.angle = i
+        time.sleep(1)
+    crickit.servo_1.angle = 60
+
+
 ########## START SPEAKING SECTION ###########
 
 def speak(ing):
     pg.init()
     pg.mixer.init()
-
+    led_found()
     if ing=="strawberry":
-        pg.mixer.music.load("/home/pi/DET2019_Proj1/audio/strawberries.wav")
+        pg.mixer.music.load("/home/pi/Desktop/audio/strawberries.wav")
         pg.mixer.music.play()
     if ing=="banana":
-        pg.mixer.music.load("/home/pi/DET2019_Proj1/audio/banana.wav")
+        pg.mixer.music.load("/home/pi/Desktop/audio/banana.wav")
         pg.mixer.music.play()
-    if ing=="milk":
-        pg.mixer.music.load("/home/pi/DET2019_Proj1/audio/milk.wav")
+    if ing=="milk" or ing=="carton" or ing=="lactis" or ing=="liquid":
+        pg.mixer.music.load("/home/pi/Desktop/audio/milk.wav")
         pg.mixer.music.play()
+    leds_discovery()
 
 def walkthrough():
+    scanned_ings.append("done")
     pg.init()
     pg.mixer.init()
 
-    pg.mixer.music.load("/home/pi/DET2019_Proj1/audio/instructions-1.wav")
+    pg.mixer.music.load("/home/pi/Desktop/audio/i-found.wav")
     pg.mixer.music.play()
     time.sleep(5)
 
-    pg.mixer.music.load("/home/pi/DET2019_Proj1/audio/instructions-2.wav")
+    pg.mixer.music.load("/home/pi/Desktop/audio/instructions-1.wav")
     pg.mixer.music.play()
-    time.sleep(5)
+    time.sleep(15)
 
-    pg.mixer.music.load("/home/pi/DET2019_Proj1/audio/instructions-3.wav")
+    pg.mixer.music.load("/home/pi/Desktop/audio/instructions-2.wav")
     pg.mixer.music.play()
-    time.sleep(5)
+    time.sleep(15)
 
-    pg.mixer.music.load("/home/pi/DET2019_Proj1/audio/instructions-4.wav")
+    pg.mixer.music.load("/home/pi/Desktop/audio/instructions-3.wav")
     pg.mixer.music.play()
-    time.sleep(5)
+    time.sleep(10)
 
-    pg.mixer.music.load("/home/pi/DET2019_Proj1/audio/instructions-5.wav")
+    pg.mixer.music.load("/home/pi/Desktop/audio/instructions-4.wav")
     pg.mixer.music.play()
-    time.sleep(5)
+    time.sleep(10)
+
+    pg.mixer.music.load("/home/pi/Desktop/audio/instructions-5.wav")
+    pg.mixer.music.play()
+    timer_on(15)
+    time.sleep(15)
+
+    pg.mixer.music.load("/home/pi/Desktop/audio/recipe-complete.wav")
+    pg.mixer.music.play()
 
 
 ########## END SPEAKING SECTION ###########
@@ -199,21 +228,26 @@ def sound_on():
     pixels.fill(OFF)
     pixels.show()
 
+def led_found():
+    print("GREEN LED")
+    pixels.fill(GREEN)
+    pixels.show()
+#    time.sleep(2)
 
 def leds_on():
     print("PURPLE LED")
     pixels.fill(PURPLE)
     pixels.show()
-    color_chase(PURPLE, 0.1)
+    leds_discovery()
 
 
 def leds_discovery():
     for i in range(4):
-        print("GREEN LED")
+        print("BLUE LED")
         time.sleep(1)
-        pixels.fill(GREEN)
+        pixels.fill(BLUE)
         pixels.show()
-        color_chase(GREEN, 0.1)
+        color_chase(BLUE, 0.1)
 
 
 def main():
@@ -228,6 +262,7 @@ def main():
         if testTouch():
             sound_on()
             leds_on()
+            crickit.servo_1.angle = 60
             stream(camera)
         else:
             print("searching...")
