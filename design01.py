@@ -135,6 +135,18 @@ PURPLE = (180, 0, 255)
 
 ########## END LED SECTION ###########
 
+def timer_on(time):
+    #5 degree tick marks
+    #31 marks
+    # 16 is center
+    #total is 120 degrees
+    crickit.servo_1.angle = 0
+    time.sleep(1)
+    for i in range(0,120, 120/time):
+        crickit.servo_1.angle = i
+        time.sleep(.1)
+
+
 ########## START SPEAKING SECTION ###########
 
 def speak(ing):
@@ -142,37 +154,38 @@ def speak(ing):
     pg.mixer.init()
 
     if ing=="strawberry":
-        pg.mixer.music.load("/home/pi/DET2019_Proj1/audio/strawberries.wav")
+        pg.mixer.music.load("/home/pi/Desktop/audio/strawberries.wav")
         pg.mixer.music.play()
     if ing=="banana":
-        pg.mixer.music.load("/home/pi/DET2019_Proj1/audio/banana.wav")
+        pg.mixer.music.load("/home/pi/Desktop/audio/banana.wav")
         pg.mixer.music.play()
     if ing=="milk":
-        pg.mixer.music.load("/home/pi/DET2019_Proj1/audio/milk.wav")
+        pg.mixer.music.load("/home/pi/Desktop/audio/milk.wav")
         pg.mixer.music.play()
 
 def walkthrough():
     pg.init()
     pg.mixer.init()
 
-    pg.mixer.music.load("/home/pi/DET2019_Proj1/audio/instructions-1.wav")
+    pg.mixer.music.load("/home/pi/Desktop/audio/instructions-1.wav")
     pg.mixer.music.play()
     time.sleep(5)
 
-    pg.mixer.music.load("/home/pi/DET2019_Proj1/audio/instructions-2.wav")
+    pg.mixer.music.load("/home/pi/Desktop/audio/instructions-2.wav")
     pg.mixer.music.play()
     time.sleep(5)
 
-    pg.mixer.music.load("/home/pi/DET2019_Proj1/audio/instructions-3.wav")
+    pg.mixer.music.load("/home/pi/Desktop/audio/instructions-3.wav")
     pg.mixer.music.play()
     time.sleep(5)
 
-    pg.mixer.music.load("/home/pi/DET2019_Proj1/audio/instructions-4.wav")
+    pg.mixer.music.load("/home/pi/Desktop/audio/instructions-4.wav")
     pg.mixer.music.play()
     time.sleep(5)
 
-    pg.mixer.music.load("/home/pi/DET2019_Proj1/audio/instructions-5.wav")
+    pg.mixer.music.load("/home/pi/Desktop/audio/instructions-5.wav")
     pg.mixer.music.play()
+    timer_on(60)
     time.sleep(5)
 
 
